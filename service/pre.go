@@ -287,6 +287,13 @@ func AutoUseFastestServer() {
 		} else {
 			_ = service.Disconnect(*wt[i], false)
 		}
+
+		if i == len(wt)-1 && !v2ray.ProcessManager.Running() {
+			if len(configure.GetConnectedServers().Get()) == 0 {
+				_ = service.Connect(wt[i])
+			}
+			_ = service.StartV2ray()
+		}
 	}
 }
 

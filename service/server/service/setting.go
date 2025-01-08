@@ -53,7 +53,7 @@ func UpdateSetting(setting *configure.Setting) (err error) {
 		conf.TickerUpdateSubscription.Reset(24 * time.Hour * 365 * 100)
 	}
 	if setting.AutoUseFastestServer != 0 {
-		conf.TickerUpdateServer.Reset(time.Duration(setting.AutoUseFastestServer) * time.Hour)
+		conf.TickerUpdateServer.Reset(time.Duration(setting.AutoUseFastestServer) * time.Minute)
 	} else {
 		conf.TickerUpdateServer.Reset(24 * time.Hour * 365 * 100)
 	}
