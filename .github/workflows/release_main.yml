@@ -378,12 +378,12 @@ jobs:
         mv builds/web.tar.gz/web.tar.gz release/
         for file in $(ls release); do
           if [[  $file =~ \~$ ]]; then
-            zip release/$file_orig.zip release/$file
+            zip -rm release/$file_orig.zip release/$file
           else
             sha256sum release/$file | awk '{print $1}' > release/$file.sha256.txt
           fi
         done
-        ls -l release/
+        tree release/
     - name: Compress Web Files
       shell: pwsh
       run: |
@@ -391,30 +391,14 @@ jobs:
         ((Get-FileHash ./web.zip).hash).ToLower() > web.zip.sha256.txt
         Move-Item ./web.zip ./release/web.zip
         Move-Item ./web.zip.sha256.txt ./release/web.zip.sha256.txt
-    - name: Generate file list for release (exclude ~ files)
-      id: file_list
-      run: |
-        # 获取所有文件，排除以 ~ 结尾的文件
-        files=$(find release/ -type f ! -name "*~")
-        
-        # 如果没有找到文件，避免空值
-        if [ -z "$files" ]; then
-          echo "No files found"
-          exit 1
-        fi
-
-        # 格式化为空格分隔的字符串（action-gh-release 需要此格式）
-        formatted_files=$(echo "$files" | tr '\n' ' ')
-
-        # 将文件列表传递给后续步骤
-        echo "files=$formatted_files" >> $GITHUB_ENV
 
     - name: Upload Release
       uses: softprops/action-gh-release@v1
       with:
         prerelease: true
         tag_name: ${{ inputs.tag || 'v1.0.0' }}
-        files: ${{ env.files }}
+        files: |
+          release/*
 
   Build_v2ray_Debian_Packages:
     runs-on: ubuntu-22.04
