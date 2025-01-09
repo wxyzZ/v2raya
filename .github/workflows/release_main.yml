@@ -396,8 +396,7 @@ jobs:
         prerelease: true
         tag_name: ${{ inputs.tag || 'v1.0.0' }}
         files: |
-          release/*.zip
-          release/*.txt
+          release/*
 
   Build_v2ray_Debian_Packages:
     runs-on: ubuntu-22.04
