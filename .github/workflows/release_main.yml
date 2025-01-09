@@ -377,9 +377,10 @@ jobs:
         done
         mv builds/web.tar.gz/web.tar.gz release/
         for file in $(ls release); do
-          sha256sum release/$file | awk '{print $1}' > release/$file.sha256.txt
-          if [[ ! $file =~ \~$ ]]; then
+          if [[  $file =~ \~$ ]]; then
             zip release/$file_orig.zip release/$file
+          else
+            sha256sum release/$file | awk '{print $1}' > release/$file.sha256.txt
           fi
         done
         ls -l release/
@@ -390,13 +391,19 @@ jobs:
         ((Get-FileHash ./web.zip).hash).ToLower() > web.zip.sha256.txt
         Move-Item ./web.zip ./release/web.zip
         Move-Item ./web.zip.sha256.txt ./release/web.zip.sha256.txt
+    - name: Generate file list for release (exclude ~ files)
+      id: file_list
+      run: |
+        # 获取所有文件，排除以 ~ 结尾的文件
+        files=$(find release/ -type f ! -name "*~")
+        echo "files=$files" >> $GITHUB_ENV
+
     - name: Upload Release
       uses: softprops/action-gh-release@v1
       with:
         prerelease: true
         tag_name: ${{ inputs.tag || 'v1.0.0' }}
-        files: |
-          release/*
+        files: ${{ env.files }}
 
   Build_v2ray_Debian_Packages:
     runs-on: ubuntu-22.04
