@@ -370,14 +370,14 @@ jobs:
       shell: bash
       run: |
         mkdir -p release
+        ls -lr builds/
         for file in $(ls builds | grep -E "^installer|^v2raya"); do
-          ls -lr builds/
           mv builds/$file/$file release/
         done
         mv builds/web.tar.gz/web.tar.gz release/
         for file in $(ls release); do
           sha256sum release/$file | awk '{print $1}' > release/$file.sha256.txt
-          if [[ ! $file =~ ".zip" ]] then
+          if [[ ! $file =~ \.zip$ ]]; then
             tar czf release/$file.zip release/$file
           fi
         done
