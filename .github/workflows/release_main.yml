@@ -396,7 +396,18 @@ jobs:
       run: |
         # 获取所有文件，排除以 ~ 结尾的文件
         files=$(find release/ -type f ! -name "*~")
-        echo "files=$files" >> $GITHUB_ENV
+        
+        # 如果没有找到文件，避免空值
+        if [ -z "$files" ]; then
+          echo "No files found"
+          exit 1
+        fi
+
+        # 格式化为空格分隔的字符串（action-gh-release 需要此格式）
+        formatted_files=$(echo "$files" | tr '\n' ' ')
+
+        # 将文件列表传递给后续步骤
+        echo "files=$formatted_files" >> $GITHUB_ENV
 
     - name: Upload Release
       uses: softprops/action-gh-release@v1
