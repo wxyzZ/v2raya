@@ -62,9 +62,9 @@ jobs:
     - name: Check Version
       id: prep
       env:
-        REF: ${{ inputs.tag }}
+        REF: ${{ inputs.tag || 'v1.0.0' }}
       run: |
-        tag=${{ inputs.tag }}
+        tag=${{ inputs.tag || 'v1.0.0' }}
         version=$(echo $tag | sed 's/v//g')
         echo "VERSION=$version" >> $GITHUB_OUTPUT
         echo "VERSION=$version" >> $GITHUB_ENV
@@ -143,9 +143,9 @@ jobs:
       id: prep
       shell: bash
       env:
-        REF: ${{ inputs.tag }}
+        REF: ${{ inputs.tag || 'v1.0.0' }}
       run: |
-        tag=${{ inputs.tag }}
+        tag=${{ inputs.tag || 'v1.0.0' }}
         version=$(echo $tag | sed 's/v//g')
         echo "VERSION=$version" >> $GITHUB_OUTPUT
         echo "VERSION=$version" >> $GITHUB_ENV
@@ -247,9 +247,9 @@ jobs:
     - name: Check Version
       id: prep
       env:
-        REF: ${{ inputs.tag }}
+        REF: ${{ inputs.tag || 'v1.0.0' }}
       run: |
-        tag=${{ inputs.tag }}
+        tag=${{ inputs.tag || 'v1.0.0' }}
         version=$(echo $tag | sed 's/v//g')
         echo "VERSION=$version" >> $GITHUB_OUTPUT
         echo "VERSION=$version" >> $GITHUB_ENV
@@ -346,9 +346,9 @@ jobs:
     - name: Check Version
       id: prep
       env:
-        REF: ${{ inputs.tag }}
+        REF: ${{ inputs.tag || 'v1.0.0' }}
       run: |
-        tag=${{ inputs.tag }}
+        tag=${{ inputs.tag || 'v1.0.0' }}
         version=$(echo $tag | sed 's/v//g')
         echo "VERSION=$version" >> $GITHUB_OUTPUT
         echo "VERSION=$version" >> $GITHUB_ENV
@@ -376,29 +376,14 @@ jobs:
         Move-Item ./web.zip ./release/web.zip
         Move-Item ./web.zip.sha256.txt ./release/web.zip.sha256.txt
     - name: Upload Release
-      env:
-        GH_TOKEN: ${{ github.token }}
-      run: |
-        echo "Don't upload SingTun binaries to GitHub Release for they are not stable."
-        rm -f release/v2raya_with_singtun_*
-        Latest_Releases=$(curl -s -H "Accept: application/vnd.github.v3+json" https://api.github.com/repos/v2rayA/v2rayA/releases/latest | jq -r '.tag_name')
-        Latest_tag=v${{ steps.prep.outputs.VERSION }}
-        if [ "$Latest_Releases" != "$Latest_tag" ]; then
-          gh release create "v${{ steps.prep.outputs.VERSION }}" -t "v${{ steps.prep.outputs.VERSION }}" --generate-notes
-        fi
-        gh release upload "v${{ steps.prep.outputs.VERSION }}" release/*
-    - name: Refresh Cloudflare Cache
-      env:
-        CF_AUTH_EMAIL: ${{ secrets.CF_AUTH_EMAIL }}
-        CF_PARGE_CACHE_AUTH_KEY: ${{ secrets.CF_PARGE_CACHE_AUTH_KEY }}
-        CF_ZONE: ${{ secrets.CF_ZONE }}
-      shell: bash
-      run: |
-        curl -X POST "https://api.cloudflare.com/client/v4/zones/$CF_ZONE/purge_cache" \
-          -H "X-Auth-Email: $CF_AUTH_EMAIL" \
-          -H "Authorization: Bearer $CF_PARGE_CACHE_AUTH_KEY" \
-          -H "Content-Type: application/json" \
-          --data '{"purge_everything":true}'
+      uses: softprops/action-gh-release@v1
+      if: env.UPLOAD_ARTIFACT == 'true'
+      with:
+        prerelease: true
+        tag_name: ${{ inputs.tag || 'v1.0.0' }}
+        files: |
+          release/*
+
   Build_v2ray_Debian_Packages:
     runs-on: ubuntu-22.04
     steps:
@@ -563,10 +548,10 @@ jobs:
     - name: Check Version
       id: prep
       env:
-        REF: ${{ inputs.tag }}
+        REF: ${{ inputs.tag || 'v1.0.0' }}
       run: |
         echo "P_DIR=$(pwd)" >> $GITHUB_OUTPUT
-        tag=${{ inputs.tag }}
+        tag=${{ inputs.tag || 'v1.0.0' }}
         version=$(echo $tag | sed 's/v//g')
         echo "VERSION=$version" >> $GITHUB_OUTPUT
         echo "VERSION=$version" >> $GITHUB_ENV
@@ -647,9 +632,9 @@ jobs:
       id: prep
       shell: bash
       env:
-        REF: ${{ inputs.tag }}
+        REF: ${{ inputs.tag || 'v1.0.0' }}
       run: |
-        tag=${{ inputs.tag }}
+        tag=${{ inputs.tag || 'v1.0.0' }}
         version=$(echo $tag | sed 's/v//g')
         echo "VERSION=$version" >> $GITHUB_OUTPUT
         echo "VERSION=$version" >> $GITHUB_ENV
@@ -701,13 +686,13 @@ jobs:
     - name: Check Version
       id: prep
       run: |
-        tag=${{ inputs.tag }}
+        tag=${{ inputs.tag || 'v1.0.0' }}
         version=$(echo $tag | sed 's/v//g')
         echo "VERSION=$version" >> $GITHUB_OUTPUT
         echo "VERSION=$version" >> $GITHUB_ENV
         IMAGE="mzz2017/v2raya"
         echo image=${IMAGE} >> $GITHUB_OUTPUT
-        echo tag=${{ inputs.tag }} >> $GITHUB_OUTPUT
+        echo tag=${{ inputs.tag || 'v1.0.0' }} >> $GITHUB_OUTPUT
         sed -i "s|Realv2rayAVersion|$version|g" install/docker/docker_helper.sh
     - name: Set up QEMU
       uses: docker/setup-qemu-action@v3.0.0
@@ -753,9 +738,9 @@ jobs:
     - name: Check Version
       id: prep
       env:
-        REF: ${{ inputs.tag }}
+        REF: ${{ inputs.tag || 'v1.0.0' }}
       run: |
-        tag=${{ inputs.tag }}
+        tag=${{ inputs.tag || 'v1.0.0' }}
         version=$(echo $tag | sed 's/v//g')
         echo "VERSION=$version" >> $GITHUB_OUTPUT
         echo "VERSION=$version" >> $GITHUB_ENV
@@ -807,9 +792,9 @@ jobs:
       id: prep
       shell: bash
       env:
-        REF: ${{ inputs.tag }}
+        REF: ${{ inputs.tag || 'v1.0.0' }}
       run: |
-        tag=${{ inputs.tag }}
+        tag=${{ inputs.tag || 'v1.0.0' }}
         version=$(echo $tag | sed 's/v//g')
         echo "VERSION=$version" >> $GITHUB_OUTPUT
         echo "VERSION=$version" >> $GITHUB_ENV
