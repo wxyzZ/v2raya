@@ -251,6 +251,7 @@ func updateSubscriptions() {
 		}(i)
 	}
 	wg.Wait()
+	go AutoUseFastestServer()
 }
 
 func AutoUseFastestServer() {
@@ -270,9 +271,10 @@ func AutoUseFastestServer() {
 			wt = append(wt, &wtOne)
 		}
 	}
-
+	outbounds := configure.GetOutbounds()
+	settings := configure.GetOutboundSetting(outbounds[0])
 	//测试服务的速度
-	wt, _ = service.TestHttpLatency(wt, 8*time.Second, 32, false, "https://www.facebook.com")
+	wt, _ = service.TestHttpLatency(wt, 8*time.Second, 32, false, settings.ProbeURL)
 
 	//自动启用faster服务器
 	for i := 0; i < len(wt); i++ {
