@@ -78,7 +78,7 @@ jobs:
     - name: Install UPX
       run: |
         sudo apt-get update
-        sudo apt-get install -y upx-ucl
+        sudo apt-get install -y upx-ucl tree
     - name: Build v2rayA Binaries
       id: build
       shell: pwsh
@@ -89,7 +89,7 @@ jobs:
           $filename = $((Get-Content ./install/friendly-filenames.json | ConvertFrom-Json)."linux-$arch")."friendlyName"
           Set-Location -Path service
           go build -tags "with_gvisor" -o ../v2raya_binaries/v2raya_${filename}_${env:VERSION} -ldflags="-X github.com/v2rayA/v2rayA/conf.Version=${env:VERSION} -s -w" -trimpath
-          # upx --best --lzma -q ../v2raya_binaries/v2raya_${filename}_${env:VERSION} || true
+          upx --best --lzma -qk ../v2raya_binaries/v2raya_${filename}_${env:VERSION} || true
           Set-Location -Path ..
         }
         foreach ($arm in @('7')) {
@@ -98,7 +98,7 @@ jobs:
           $filename = $((Get-Content ./install/friendly-filenames.json | ConvertFrom-Json)."linux-arm$arm")."friendlyName"
           Set-Location -Path service
           go build -tags "with_gvisor" -o ../v2raya_binaries/v2raya_${filename}_${env:VERSION} -ldflags="-X github.com/v2rayA/v2rayA/conf.Version=${env:VERSION} -s -w" -trimpath
-          # upx --best --lzma -q ../v2raya_binaries/v2raya_${filename}_${env:VERSION} || true
+          upx --best --lzma -qk ../v2raya_binaries/v2raya_${filename}_${env:VERSION} || true
           Set-Location -Path ..
         }
         foreach ($arch in @('amd64', 'arm64')) {
@@ -107,7 +107,7 @@ jobs:
           $filename = $((Get-Content ./install/friendly-filenames.json | ConvertFrom-Json)."windows-$arch")."friendlyName"
           Set-Location -Path service
           go build -tags "with_gvisor" -o ../v2raya_binaries/v2raya_${filename}_${env:VERSION}.exe -ldflags="-X github.com/v2rayA/v2rayA/conf.Version=${env:VERSION} -s -w" -trimpath
-          # upx --best --lzma -q ../v2raya_binaries/v2raya_${filename}_${env:VERSION}.exe || true
+          upx --best --lzma -qk ../v2raya_binaries/v2raya_${filename}_${env:VERSION}.exe || true
           Set-Location -Path ..
         }
         foreach ($arch in @('amd64', 'arm64')) {
@@ -116,7 +116,7 @@ jobs:
           $filename = $((Get-Content ./install/friendly-filenames.json | ConvertFrom-Json)."darwin-$arch")."friendlyName"
           Set-Location -Path service
           go build -tags "with_gvisor" -o ../v2raya_binaries/v2raya_${filename}_${env:VERSION} -ldflags="-X github.com/v2rayA/v2rayA/conf.Version=${env:VERSION} -s -w" -trimpath
-          # upx --best --lzma -q ../v2raya_binaries/v2raya_${filename}_${env:VERSION} || true
+          upx --best --lzma -qk ../v2raya_binaries/v2raya_${filename}_${env:VERSION} || true
           Set-Location -Path ..
         }
         foreach ($arch in @('amd64', 'arm64')) {
@@ -125,7 +125,7 @@ jobs:
           $filename = $((Get-Content ./install/friendly-filenames.json | ConvertFrom-Json)."freebsd-$arch")."friendlyName"
           Set-Location -Path service
           go build -tags "with_gvisor" -o ../v2raya_binaries/v2raya_${filename}_${env:VERSION} -ldflags="-X github.com/v2rayA/v2rayA/conf.Version=${env:VERSION} -s -w" -trimpath
-          # upx --best --lzma -q ../v2raya_binaries/v2raya_${filename}_${env:VERSION} || true
+          upx --best --lzma -qk ../v2raya_binaries/v2raya_${filename}_${env:VERSION} || true
           Set-Location -Path ..
         }
         foreach ($arch in @('amd64', 'arm64')) {
@@ -134,7 +134,8 @@ jobs:
           $filename = $((Get-Content ./install/friendly-filenames.json | ConvertFrom-Json)."openbsd-$arch")."friendlyName"
           Set-Location -Path service
           go build -tags "with_gvisor" -o ../v2raya_binaries/v2raya_${filename}_${env:VERSION} -ldflags="-X github.com/v2rayA/v2rayA/conf.Version=${env:VERSION} -s -w" -trimpath
-          # upx --best --lzma -q ../v2raya_binaries/v2raya_${filename}_${env:VERSION} || true
+          upx --best --lzma -qk ../v2raya_binaries/v2raya_${filename}_${env:VERSION} || true
+          tree ../v2raya_binaries/
           Set-Location -Path ..
         }
     - name: Upload Artifact
@@ -377,8 +378,8 @@ jobs:
         mv builds/web.tar.gz/web.tar.gz release/
         for file in $(ls release); do
           sha256sum release/$file | awk '{print $1}' > release/$file.sha256.txt
-          if [[ ! $file =~ \.zip$ ]]; then
-            tar czf release/$file.zip release/$file
+          if [[ ! $file =~ \~$ ]]; then
+            zip release/$file_orig.zip release/$file
           fi
         done
         ls -l release/
