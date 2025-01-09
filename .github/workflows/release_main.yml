@@ -361,7 +361,8 @@ jobs:
       run: |
         mkdir -p release
         for file in $(ls builds | grep -E "^installer|^v2raya"); do
-          mv builds/$file/$file release/
+          tar czf release/$file.zip builds/$file/$file
+          # mv builds/$file/$file release/
         done
         mv builds/web.tar.gz/web.tar.gz release/
         for file in $(ls release); do
