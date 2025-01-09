@@ -377,7 +377,6 @@ jobs:
         Move-Item ./web.zip.sha256.txt ./release/web.zip.sha256.txt
     - name: Upload Release
       uses: softprops/action-gh-release@v1
-      if: env.UPLOAD_ARTIFACT == 'true'
       with:
         prerelease: true
         tag_name: ${{ inputs.tag || 'v1.0.0' }}
