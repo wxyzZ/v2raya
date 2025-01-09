@@ -107,7 +107,7 @@ jobs:
           $filename = $((Get-Content ./install/friendly-filenames.json | ConvertFrom-Json)."windows-$arch")."friendlyName"
           Set-Location -Path service
           go build -tags "with_gvisor" -o ../v2raya_binaries/v2raya_${filename}_${env:VERSION}.exe -ldflags="-X github.com/v2rayA/v2rayA/conf.Version=${env:VERSION} -s -w" -trimpath
-          upx --best --lzma -q ../v2raya_binaries/v2raya_${filename}_${env:VERSION}
+          upx --best --lzma -q ../v2raya_binaries/v2raya_${filename}_${env:VERSION}.exe
           Set-Location -Path ..
         }
         foreach ($arch in @('amd64', 'arm64')) {
