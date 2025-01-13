@@ -133,6 +133,7 @@ jobs:
         path: |
           v2raya_binaries/*
   Release_to_Homebrew:
+    if: false
     runs-on: ubuntu-22.04
     needs: [Build_v2rayA_Binaries]
     steps:
@@ -188,7 +189,7 @@ jobs:
           v2raya-aarch64-macos.zip v2raya-aarch64-macos.zip.sha256.txt
   
   Build_Windows_installer:
-    if: false
+    
     runs-on: windows-latest
     needs: [Build_v2rayA_Binaries]
     env:
