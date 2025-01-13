@@ -274,8 +274,8 @@ func AutoUseFastestServer() {
 	outbounds := configure.GetOutbounds()
 	settings := configure.GetOutboundSetting(outbounds[0])
 	//测试服务的速度
-	wt, _ = service.TestHttpLatency(wt, 8*time.Second, 32, false, settings.ProbeURL)
-
+	wt, _ = service.TestHttpLatency(wt, 4*time.Second, 32, false, settings.ProbeURL)
+	_ = configure.ClearConnects("")
 	//自动启用faster服务器
 	for i := 0; i < len(wt); i++ {
 		firstC := wt[i].Latency[0:1]

@@ -64,7 +64,14 @@ func GetHttpLatency(ctx *gin.Context) {
 		return
 	}
 	log.Debug("controller/latency.go --- testurl:%s", ctx.Query("testUrl"))
-	wt, err = service.TestHttpLatency(wt, 8*time.Second, 32, false, ctx.Query("testUrl"))
+
+	testUrl := ctx.Query("testUrl")
+	if testUrl == "" {
+		outbound := configure.GetOutbounds()[0]
+		outSetting := configure.GetOutboundSetting(outbound)
+		testUrl = outSetting.ProbeURL
+	}
+	wt, err = service.TestHttpLatency(wt, 8*time.Second, 32, false, testUrl)
 	if err != nil {
 		common.ResponseError(ctx, logError(err))
 		return

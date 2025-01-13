@@ -87,7 +87,7 @@ func (s *httpProxy) Dial(network, addr string) (net.Conn, error) {
 		req.Header.Set("Proxy-Authorization", req.Header.Get("Authorization"))
 		req.Header.Del("Authorization")
 	}
-	req.Header.Set("User-Agent", "v2rayA")
+	req.Header.Set("User-Agent", "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36")
 
 	err = req.Write(c)
 	if err != nil {
