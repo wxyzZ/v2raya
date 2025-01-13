@@ -215,11 +215,11 @@ func UpdateSubscription(index int, disconnectIfNecessary bool) (err error) {
 	// serverObj.ServerObj is a pointer(interface), and shouldn't be as a key
 	link2Raw := make(map[string]*configure.ServerRaw)
 	connectedVmessInfo2CssIndex := make(map[string][]int)
-	for i, cs := range css.Get() {
+	for i, cs := range cssAfter {
 		if cs.TYPE == configure.SubscriptionServerType && cs.Sub == index {
-			if sRaw, err := cs.LocateServerRaw(); err != nil {
-				return err
-			} else {
+			if sRaw, err := cs.LocateServerRaw(); err == nil {
+				//	return err
+				//} else {
 				link := sRaw.ServerObj.ExportToURL()
 				link2Raw[link] = sRaw
 				connectedVmessInfo2CssIndex[link] = append(connectedVmessInfo2CssIndex[link], i)
