@@ -12,6 +12,7 @@ import (
 	"github.com/v2rayA/v2rayA/core/touch"
 	"github.com/v2rayA/v2rayA/db/configure"
 	"github.com/v2rayA/v2rayA/pkg/util/log"
+
 	"io"
 	"net"
 	"net/http"
@@ -262,7 +263,11 @@ func UpdateSubscription(index int, disconnectIfNecessary bool) (err error) {
 	subscriptions[index].Servers = infoServerRaws
 	subscriptions[index].Status = string(touch.NewUpdateStatus())
 	subscriptions[index].Info = status
-	return configure.SetSubscription(index, &subscriptions[index])
+	err = configure.SetSubscription(index, &subscriptions[index])
+	//if cssAfter == nil || len(cssAfter) == 0 {
+	go AutoUseFastestServer()
+	//}
+	return err
 }
 
 func ModifySubscriptionRemark(subscription touch.Subscription) (err error) {

@@ -1,7 +1,12 @@
 package service
 
 import (
+	"github.com/v2rayA/v2rayA/core/touch"
+	"github.com/v2rayA/v2rayA/core/v2ray"
 	"github.com/v2rayA/v2rayA/db/configure"
+	"github.com/v2rayA/v2rayA/pkg/util/log"
+	"strconv"
+	"time"
 )
 
 func DeleteWhich(ws []*configure.Which) (err error) {
@@ -79,4 +84,55 @@ func DeleteWhich(ws []*configure.Which) (err error) {
 		}
 	}
 	return
+}
+
+func AutoUseFastestServer() {
+	//running := v2ray.ProcessManager.Running()
+	t := touch.GenerateTouch().Subscriptions
+	//if index != -1 {
+	//	t = nil
+	//	t[0] = touch.GenerateTouch().Subscriptions[index]
+	//}
+	//获取所有服务列表
+
+	var wt []*configure.Which
+	//var wtOne *configure.Which
+	for i := 0; i < len(t); i++ {
+		tmp := t[i]
+		for j := 0; j < len(tmp.Servers); j++ {
+			wtOne := configure.Which{}
+			wtOne.Sub = tmp.ID - 1
+			wtOne.TYPE = tmp.Servers[j].TYPE
+			wtOne.ID = tmp.Servers[j].ID
+			wt = append(wt, &wtOne)
+		}
+	}
+	outbounds := configure.GetOutbounds()
+	settings := configure.GetOutboundSetting(outbounds[0])
+	//测试服务的速度
+	wt, _ = TestHttpLatency(wt, 4*time.Second, 32, false, settings.ProbeURL)
+	_ = configure.ClearConnects("")
+	//自动启用faster服务器
+	for i := 0; i < len(wt); i++ {
+		firstC := wt[i].Latency[0:1]
+		_, err := strconv.Atoi(firstC)
+		if err == nil {
+			log.Error(strconv.Itoa(i))
+			err = Connect(wt[i])
+			if err != nil {
+				log.Error("PostConnection: %v", err)
+				return
+			}
+		} else {
+			//log.Error("自动启用faster服务器: %v", err)
+			_ = Disconnect(*wt[i], false)
+		}
+
+		if i == len(wt)-1 && !v2ray.ProcessManager.Running() {
+			if len(configure.GetConnectedServers().Get()) == 0 {
+				_ = Connect(wt[i])
+			}
+			_ = StartV2ray()
+		}
+	}
 }

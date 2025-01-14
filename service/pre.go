@@ -2,13 +2,11 @@ package main
 
 import (
 	"fmt"
-	"github.com/v2rayA/v2rayA/core/touch"
 	"net"
 	"os"
 	"os/signal"
 	"path/filepath"
 	"runtime"
-	"strconv"
 	"sync"
 	"syscall"
 	"time"
@@ -251,52 +249,7 @@ func updateSubscriptions() {
 		}(i)
 	}
 	wg.Wait()
-	go AutoUseFastestServer()
-}
-
-func AutoUseFastestServer() {
-	//running := v2ray.ProcessManager.Running()
-
-	//获取所有服务列表
-	t := touch.GenerateTouch().Subscriptions
-	var wt []*configure.Which
-	//var wtOne *configure.Which
-	for i := 0; i < len(t); i++ {
-		tmp := t[i]
-		for j := 0; j < len(tmp.Servers); j++ {
-			wtOne := configure.Which{}
-			wtOne.Sub = tmp.ID - 1
-			wtOne.TYPE = tmp.Servers[j].TYPE
-			wtOne.ID = tmp.Servers[j].ID
-			wt = append(wt, &wtOne)
-		}
-	}
-	outbounds := configure.GetOutbounds()
-	settings := configure.GetOutboundSetting(outbounds[0])
-	//测试服务的速度
-	wt, _ = service.TestHttpLatency(wt, 4*time.Second, 32, false, settings.ProbeURL)
-	_ = configure.ClearConnects("")
-	//自动启用faster服务器
-	for i := 0; i < len(wt); i++ {
-		firstC := wt[i].Latency[0:1]
-		_, err := strconv.Atoi(firstC)
-		if err == nil {
-			err = service.Connect(wt[i])
-			if err != nil {
-				log.Error("PostConnection: %v", err)
-				return
-			}
-		} else {
-			_ = service.Disconnect(*wt[i], false)
-		}
-
-		if i == len(wt)-1 && !v2ray.ProcessManager.Running() {
-			if len(configure.GetConnectedServers().Get()) == 0 {
-				_ = service.Connect(wt[i])
-			}
-			_ = service.StartV2ray()
-		}
-	}
+	//go service.AutoUseFastestServer()
 }
 
 func initUpdatingTicker() {
@@ -318,7 +271,7 @@ func initUpdatingTicker() {
 	}()
 	go func() {
 		for range conf.TickerUpdateServer.C {
-			AutoUseFastestServer()
+			service.AutoUseFastestServer()
 		}
 	}()
 }
@@ -364,7 +317,7 @@ func checkUpdate() {
 
 	if setting.AutoUseFastestServer != 0 {
 		conf.TickerUpdateServer.Reset(time.Duration(setting.AutoUseFastestServer) * time.Minute)
-		go AutoUseFastestServer()
+		//go service.AutoUseFastestServer()
 	}
 
 	// 检查服务端更新
