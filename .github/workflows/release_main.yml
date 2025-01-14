@@ -377,7 +377,7 @@ jobs:
         done
         mv builds/web.tar.gz/web.tar.gz release/
         for file in $(ls release); do
-          tar -czf release/$file.tar release/$file
+          tar -czf release/$file.tar.gz release/$file
           sha256sum release/$file | awk '{print $1}' > release/$file.sha256.txt
         done
         tree release/
@@ -395,7 +395,7 @@ jobs:
         prerelease: true
         tag_name: ${{ inputs.tag || 'v1.0.0' }}
         files: |
-          release/*.tar
+          release/*.tar.gz
           release/*.txt
 
   Build_v2ray_Debian_Packages:
