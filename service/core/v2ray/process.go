@@ -339,6 +339,7 @@ func UpdateV2RayConfig() (err error) {
 	}
 	err = ProcessManager.Start(tmpl)
 	if err != nil {
+		log.Error(err.Error())
 		return err
 	}
 	return

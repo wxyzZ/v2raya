@@ -56,5 +56,13 @@ func PutSubscription(ctx *gin.Context) {
 		common.ResponseError(ctx, logError(err))
 		return
 	}
+	go service.AutoUseFastestServer(index)
 	getTouch(ctx)
+}
+
+func GetAutoUse(ctx *gin.Context) {
+	go service.AutoUseFastestServer(-1)
+	common.ResponseSuccess(ctx, gin.H{
+		"status": "success",
+	})
 }

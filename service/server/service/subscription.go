@@ -265,7 +265,7 @@ func UpdateSubscription(index int, disconnectIfNecessary bool) (err error) {
 	subscriptions[index].Info = status
 	err = configure.SetSubscription(index, &subscriptions[index])
 	//if cssAfter == nil || len(cssAfter) == 0 {
-	go AutoUseFastestServer()
+	//AutoUseFastestServer(index)
 	//}
 	return err
 }

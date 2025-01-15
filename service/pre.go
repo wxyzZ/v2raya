@@ -249,7 +249,7 @@ func updateSubscriptions() {
 		}(i)
 	}
 	wg.Wait()
-	//go service.AutoUseFastestServer()
+	service.AutoUseFastestServer(-1)
 }
 
 func initUpdatingTicker() {
@@ -271,7 +271,7 @@ func initUpdatingTicker() {
 	}()
 	go func() {
 		for range conf.TickerUpdateServer.C {
-			service.AutoUseFastestServer()
+			service.AutoUseFastestServer(-1)
 		}
 	}()
 }

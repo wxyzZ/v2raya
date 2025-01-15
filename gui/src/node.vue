@@ -132,6 +132,14 @@
           <b-button
             class="field mobile-small"
             type="is-primary"
+            @click="handleClickAutoUse"
+          >
+            <i class="iconfont icon-daoruzupu-xianxing" />
+            <span>启用可用节点</span>
+          </b-button>
+          <b-button
+            class="field mobile-small"
+            type="is-primary"
             @click="handleClickCreate"
           >
             <i class="iconfont icon-chuangjiangongdan1" />
@@ -180,6 +188,7 @@
           <a class="card-footer-item" @click="handleClickImport">{{
             $t("operations.import")
           }}</a>
+          
         </footer>
       </b-collapse>
       <b-tabs
@@ -1216,6 +1225,14 @@ export default {
     },
     handleClickImport() {
       this.showModalImport = true;
+    },
+    handleClickAutoUse() {
+      //测试
+      this.$axios({
+        url: apiRoot + "/autouse",
+        method: "get",
+      }).then((res) => {
+      });
     },
     handleClickImportConfirm(value) {
       if (typeof value != "string") {
