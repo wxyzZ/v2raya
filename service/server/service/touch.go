@@ -88,12 +88,14 @@ func DeleteWhich(ws []*configure.Which) (err error) {
 
 func AutoUseFastestServer(index int) {
 	//running := v2ray.ProcessManager.Running()
-	_ = configure.ClearConnects("")
+
 	t := touch.GenerateTouch().Subscriptions
 	if index >= 0 {
 		tmp := t
 		t = []touch.Subscription{}
 		t = append(t, tmp[index])
+	} else {
+		_ = configure.ClearConnects("")
 	}
 
 	//获取所有服务列表
