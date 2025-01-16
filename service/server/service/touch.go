@@ -112,10 +112,10 @@ func AutoUseFastestServer(index int) {
 		}
 	}
 
-	outbounds := configure.GetOutbounds()
-	settings := configure.GetOutboundSetting(outbounds[0])
+	//outbounds := configure.GetOutbounds()
+	//settings := configure.GetOutboundSetting(outbounds[0])
 	//测试服务的速度
-	wt, _ = TestHttpLatency(wt, 4*time.Second, 32, false, settings.ProbeURL)
+	wt, _ = TestHttpLatency(wt, 4*time.Second, 32, false, "")
 
 	//自动启用faster服务器
 	for i := 0; i < len(wt); i++ {
